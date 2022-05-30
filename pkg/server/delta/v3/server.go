@@ -166,7 +166,6 @@ func (s *server) processDelta(str stream.DeltaStream, reqCh <-chan *discovery.De
 				watch.Cancel()
 			}
 
-			s.subscribe(req.GetResourceNamesSubscribe(), watch.state.GetResourceVersions())
 			s.unsubscribe(req.GetResourceNamesUnsubscribe(), watch.state.GetResourceVersions())
 
 			watch.responses = make(chan cache.DeltaResponse, 1)
@@ -207,14 +206,6 @@ func (s *server) DeltaStreamHandler(str stream.DeltaStream, typeURL string) erro
 	}()
 
 	return s.processDelta(str, reqCh, typeURL)
-}
-
-// When we subscribe, we just want to make the cache know we are subscribing to a resource.
-// Providing a name with an empty version is enough to make that happen.
-func (s *server) subscribe(resources []string, sv map[string]string) {
-	for _, resource := range resources {
-		sv[resource] = ""
-	}
 }
 
 // Unsubscriptions remove resources from the stream state to
